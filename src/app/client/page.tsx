@@ -1,5 +1,4 @@
 "use client";
-
 // Remember you must use an AuthProvider for
 // client components to useSession
 import { useSession } from "next-auth/react";
@@ -13,6 +12,13 @@ const ClientPage = () => {
       redirect("/api/auth/signin?callbackUrl=/client");
     },
   });
+
+  // if (session?.user.role !== "admin"
+  //     && session?.user.role !== "manager") {
+  //     return <h1 className="text-5xl">Access Denied</h1>
+  // }
+
+  if (!session?.user) return;
 
   return (
     <section className="flex flex-col gap-6">
