@@ -37,9 +37,9 @@ export const options: NextAuthOptions = {
         // Docs: https://next-auth.js.org/configuration/providers/credentials
         const user = {
           id: "42",
-          name: "Dave",
-          password: "nextauth",
-          role: "manager",
+          name: "salman",
+          password: "112233",
+          role: "admin",
         };
 
         if (
