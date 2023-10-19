@@ -1,0 +1,183 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  USER
+  PROUSER
+  TEAM
+  ADMIN
+}
+
+model Account {
+  id                 String  @id @default(auto()) @map("_id") @db.ObjectId
+  userId             String  @db.ObjectId
+  type               String
+  provider           String
+  providerAccountId  String
+  refresh_token      String?  @db.String
+  access_token       String?  @db.String
+  expires_at         Int?
+  token_type         String?
+  scope              String?
+  id_token           String?  @db.String
+  session_state      String?
+
+  user               User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(auto()) @map("_id") @db.ObjectId
+  sessionToken String   @unique
+  userId       String   @db.ObjectId
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model User {
+  id              String    @id @default(auto()) @map("_id") @db.ObjectId
+  name            String?
+  email           String?   @unique
+  emailVerified   Boolean?   @default(false)
+  image           String?
+  accounts        Account[]
+  sessions        Session[]
+  role            Role  @default(USER)
+}
+
+model Subscriber {
+  id            String    @id @default(auto()) @map("_id") @db.ObjectId
+  email         String?   @unique
+}
+
+// model Blog {
+//   id            String    @id @default(auto()) @map("_id") @db.ObjectId
+//   title         String
+//   slug          String    @unique
+//   createdAt     DateTime  @default(now())
+//   updatedAt     DateTime  @updatedAt
+//   imgSrc        String?
+//   content       String
+//   author        User      @relation(fields: [authorId], references: [id], onDelete: Cascade)
+//   authorId      String    @db.ObjectId
+//   likedIds      String[]  @db.ObjectId
+//   category      String?    
+//   categoryIDs   String[]  @db.ObjectId
+//   categories    Category[]  @relation(fields: [categoryIDs], references: [id])
+//   comments      Comment[] // A post can have many comments
+//   keywords      String[]
+// }
+
+// model Category {
+//   id          String   @id @default(auto()) @map("_id") @db.ObjectId
+//   name        String
+//   blogIds     String[] @db.ObjectId
+//   blogs       Blog[] @relation(fields: [blogIds], references: [id])
+// }
+
+// model Comment {
+//   id        String @id @default(auto()) @map("_id") @db.ObjectId
+//   content   String
+//   blog      Blog?   @relation(fields: [blogId], references: [id]) // A comment can have one post
+//   blogId    String? @db.ObjectId
+// }
+
+// model Keyword {
+//   name    String @id @map("_id")
+// }
+
+// // Models for related data
+// model CompanyInfo {
+//   id                     String @id @default(auto()) @map("_id") @db.ObjectId
+//   Symbol                 String @unique
+//   AssetType              String?
+//   Name                   String?
+//   Description            String?
+//   CIK                    String?
+//   Exchange               String?
+//   Currency               String?
+//   Country                String?
+//   Sector                 String?
+//   Industry               String?
+//   Address                String?
+//   FiscalYearEnd          String?
+//   LatestQuarter          String?
+//   MarketCapitalization   String?
+//   EBITDA                 String?
+//   PERatio                String?
+//   PEGRatio               String?
+//   BookValue              String?
+//   DividendPerShare       String?
+//   DividendYield          String?
+//   EPS                    String?
+//   RevenuePerShareTTM     String?
+//   ProfitMargin           String?
+//   OperatingMarginTTM     String?
+//   ReturnOnAssetsTTM      String?
+//   ReturnOnEquityTTM      String?
+//   RevenueTTM             String?
+//   GrossProfitTTM         String?
+//   DilutedEPSTTM          String?
+//   QuarterlyEarningsGrowthYOY String?
+//   QuarterlyRevenueGrowthYOY String?
+//   AnalystTargetPrice     String?
+//   TrailingPE             String?
+//   ForwardPE              String?
+//   PriceToSalesRatioTTM   String?
+//   PriceToBookRatio       String?
+//   EVToRevenue            String?
+//   EVToEBITDA             String?
+//   Beta                   String?
+//   Week52High               String?
+//   Week52Low                String?
+//   Day50MovingAverage       String?
+//   Day200MovingAverage    String?
+//   SharesOutstanding      String?
+//   DividendDate           String?
+//   ExDividendDate         String?
+
+//   insideData InsideData?
+//   createdAt DateTime    @default(now())
+//   updatedAt DateTime    @updatedAt
+// }
+
+// model InsideData {
+//   id            String   @id @default(auto()) @map("_id") @db.ObjectId
+//   filingDate    DateTime?
+//   tradeDate     DateTime?
+//   ticker        String  @unique
+//   companyName   String?
+//   insiderName   String?
+//   title         String?
+//   tradeType     String?
+//   price         String?
+//   qty           String?
+//   owned         String?
+//   own           String?
+//   value         String?
+//   oneDay        String?
+//   oneWeek       String?
+//   oneMonth      String?
+//   sixMonths     String?
+//   createdAt     DateTime    @default(now())
+
+//   companyInfo CompanyInfo? @relation(fields: [ticker], references: [Symbol])
+
+//   @@index([filingDate, tradeDate, ticker, insiderName, title, tradeType, price, qty, owned, own, value], name: "compound_unique_index")
+// }
+
+// model NewSymbol {
+//   id      String   @id @default(auto()) @map("_id") @db.ObjectId
+//   Symbol  String   @unique
+//   createdAt DateTime    @default(now())
+// }
